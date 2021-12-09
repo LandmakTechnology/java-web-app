@@ -7,6 +7,7 @@ node{
        sh "${MHD}/bin/mvn clean package"
  
     }
+    /*
     stage('deploy'){
   sshagent(['tomcat']) {
   //sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
@@ -18,5 +19,5 @@ emailext body: '''Build is over
 Landmark
 437212483''', recipientProviders: [developers(), requestor()], subject: 'Build', to: 'tdapp@gmail.com'
 }
-    
+    */
 }
