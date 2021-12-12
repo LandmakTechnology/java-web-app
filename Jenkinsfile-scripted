@@ -1,0 +1,39 @@
+//scripted pipeline
+node{
+ def MHD = tool name: "maven3.8.4"
+    stage('1.Initiation'){
+    sh "echo Start of td deployment"
+    }
+    stage('2.CloneCode'){
+    git branch: 'stage', credentialsId: 'GitHubCredentials', url: 'https://github.com/LandmakTechnology/web-app'
+    }
+    stage('3.buildMaven'){
+    sh "${MHD}/bin/mvn package"
+    }
+    stage('4.CodeQuality'){
+    //sh "${MHD}/bin/mvn sonar:sonar"
+    }
+    stage('5.UploadArtifacts'){
+    //sh "${MHD}/bin/mvn deploy"
+    }
+    stage('6.Deploy2Stage'){
+    sshagent(['32d5fb4f-d92f-4a10-9f12-2738eab55fcc']) {
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/app"
+}
+    
+} 
+    }
+    stage('7.Approval'){
+    timeout(time:5, unit:'DAYS'){
+ 			input message: 'Approval for production'
+    
+    }
+    stage('8.deployToProd'){
+    sshagent(['32d5fb4f-d92f-4a10-9f12-2738eab55fcc']) {
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
+}
+    
+    }
+}
+
+
