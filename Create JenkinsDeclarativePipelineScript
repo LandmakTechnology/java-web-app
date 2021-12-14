@@ -1,0 +1,59 @@
+//declarative pipeline
+pipeline{
+  agent any  
+  tools {
+    maven "maven3.8.4"
+  }
+  triggers {
+  pollSCM '* * * * * '
+}
+  stages {
+    stage('1.CodeClone'){
+      steps{
+          git branch: 'stage', credentialsId: 'GitHubCredentials', url: 'https://github.com/LandmakTechnology/web-app'
+      }
+    } 
+    stage('2.mavenBuild'){
+      steps{
+      sh "mvn clean package"
+      } 
+    }
+    stage('3.CodeQuality') {
+      steps{
+      sh "echo reports done"
+      //sh "mvn sonar:sonar"
+      } 
+    }
+    stage('4.uploadToNexus'){
+      steps{
+      sh "echo artifacts uploaded"
+      //sh "mvn deploy"
+      } 
+    }
+    stage('5.Deploy2Tomcat'){
+    steps{
+    sshagent(['32d5fb4f-d92f-4a10-9f12-2738eab55fcc']) {
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/app"
+}
+    
+} 
+    }
+    }
+  post{
+    always {
+     mail bcc: 'td-app@gmail.com', body: '''Build complete 
+
+Landmark Technologies''', cc: 'td-app@gmail.com', from: '', replyTo: '', subject: 'Build done', to: 'td-app@gmail.com'
+    } 
+    failure {
+    mail bcc: 'td-app@gmail.com', body: '''Build complete 
+
+Landmark Technologies''', cc: 'td-app@gmail.com', from: '', replyTo: '', subject: 'Build failed', to: 'td-app@gmail.com'
+    }
+    success {
+    mail bcc: 'td-app@gmail.com', body: '''Build complete 
+
+Landmark Technologies''', cc: 'td-app@gmail.com', from: '', replyTo: '', subject: 'Build succeed', to: 'td-app@gmail.com'
+    }
+  }  
+  }
