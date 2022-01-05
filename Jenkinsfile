@@ -1,23 +1,32 @@
-node{
-    def MHD = tool name: "maven3.8.4"
-    stage('code'){
-        git branch: 'development', url: 'https://github.com/LandmakTechnology/web-app'
-    }
-    stage('BUILD'){
-       sh "${MHD}/bin/mvn clean package"
- 
-    }
-    /*
-    stage('deploy'){
-  sshagent(['tomcat']) {
-  sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
-}
-}
-stage('email'){
-emailext body: '''Build is over
+node { 
+    def MHD = tool name: 'maven3.84'
 
-Landmark
-437212483''', recipientProviders: [developers(), requestor()], subject: 'Build', to: 'tdapp@gmail.com'
+stage ('1.Initiation') {
+sh "echo tart deployment"
+
 }
-    */
+stage('2.Clone') {
+git branch: 'dev', credentialsId: 'Github-Credentials', url: 'https://github.com/Ndolino/web-app'
+}
+
+stage('3.Mavenbuild') {
+    
+sh "${MHD}/bin/mvn clean package " 
+}
+stage('4.CodeQuality') {
+sh "${MHD}/bin/mvn sonar:sonar " 
+}
+stage('5.uploadsArtifacts') {
+sh "${MHD}/bin/mvn deploy" 
+}
+stage('5.udeploy') {
+deploy adapters: [tomcat9(credentialsId: 'Tomcat-Credentials', path: '', url: 'http://35.189.73.133:8080/')], contextPath: null, war: '**/*.war'
+
+}
+stage('emailNotification'){
+   emailext body: '''Hello All,
+See statust of build from Dev BMO pipe;ine project.
+Regards.
+Devops Eng Team''', subject: 'Build Status', to: 'micheltaxclinicvolun20@gmail.com michelgm276@gmail.com'
+}
 }
