@@ -102,7 +102,7 @@
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Snapshot Nexus Repository </name>
-	      <url/>http://44.203.71.19:8081/repository/mankondev-snapshot/</url>
+	      <url>http://44.203.71.19:8081/repository/mankondev-snapshot/</url>
 	    </snapshotRepository>
 	    
 	</distributionManagement>
