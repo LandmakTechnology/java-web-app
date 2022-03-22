@@ -9,7 +9,7 @@
 </head>
 </head>
 <body>
-<h1 align="center">Welcome to Landmark Technologies, USA Office.</h1>
+<h1 align="center">Welcome to Landmark, USA Office.</h1>
 <h1 align="center">We are developing and supporting quality Software Solutions and serving over 5 billion users.
 	We also offer Training for DevOps with Linux and Cloud Engineers for best performance.</h1>
 <hr>
