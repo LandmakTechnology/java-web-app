@@ -1,0 +1,40 @@
+node{
+   def mavenHome = tool name:'maven3.8.5'
+   stage('1Clone'){
+    git branch: 'master', credentialsId: 'GitHub-Credentials', url: 'https://github.com/poliscasfino/Paypal-web-app'
+  }
+  stage('2MavenBuild'){
+    sh "${mavenHome}/bin/mvn clean package"
+  }
+   stage('3CodeQuality'){
+    sh "${mavenHome}/bin/mvn sonar:sonar"
+   }
+       stage('4.UploadArtifacts'){
+    sh "${mavenHome}/bin/mvn deploy"
+       }
+       stage('5.Deploy2dev'){
+  deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://52.87.97.53:8080/')], contextPath: null, war: 'target/*war'
+       }
+     stage('6.Deploy2uat'){
+        sshagent(['TomcatKey']) {
+    // some block
+       sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@52.87.97.53:/opt/tomcat9/webapps/uat.war"
+} 
+stage('7.approval'){
+      timeout(time:8, unit:'HOURS'){
+        input message: 'Please approve deployment to Production'
+  }
+ }  
+    stage('8.Deploy2pro'){
+      sshagent(['TomcatKey']) {
+      sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@52.87.97.53:/opt/tomcat9/webapps/uat.war"
+}
+   }
+   stage('9.EmailAlerts'){
+        emailext body: '''Hello Idara,
+    Build status for boa app.
+   Regards
+   Taiwo''', recipientProviders: [developers(), requestor()], subject: 'Project Status', to: 'taiwoabbey147@yahoo.com'
+   }
+     }
+}     
