@@ -38,7 +38,7 @@ node{
       stage('9.EmailAlerts'){
     emailext body: '''Hi
 
-Build status for boa app.
+Build status for boa app..
 
 Regards,
 Landmark Technologies''', recipientProviders: [developers(), requestor()], subject: 'Project status', to: 'boa@gmail.com'
