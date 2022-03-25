@@ -1,0 +1,83 @@
+pipeline{
+  agent any 
+  tools{
+    maven "maven3.8.4"
+  }
+  stages{
+    stage('1.clone'){
+      steps{
+            sh "echo clonning the latest version of the code" 
+            git branch: 'feature', credentialsId: 'Git_Credentials', url: 'https://github.com/LandmakTechnology/paypal-web-app'
+            sh "echo clonning successful"
+      }
+    }
+    stage('2.Build'){
+      steps{
+        sh "echo validation, compilation, testing and package"
+        sh "echo testing successful and ready to package"
+        sh "mvn clean package"
+      }
+    }
+    stage('3.Quality'){
+      steps{
+        sh "echo performing code quality analysis"
+        sh "echo code quality successful and ready to upload"
+        sh "mvn sonar:sonar"
+      }
+    }
+  stage('4.uploadArtifacts'){
+      steps{
+        sh "mvn deploy"
+      }
+    }
+  stage('5.Deploy2UAT'){
+      steps{
+        sh "echo DEPLOYING TO UAT for further testing and validation"
+        sshagent(['agentcredentials']) {
+        sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.89.218:/opt/tomcat9/webapps/uatapp.war"
+      }
+    }
+  }
+      stage('6.Deploy2Prod'){
+      steps{
+        sh "echo DEPLOYING application TO Production"
+        timeout(time:8, unit:'HOURS'){
+        input message: 'Please approve deployment to Production'
+      }
+        sshagent(['agentcredentials']) {
+        sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.89.218:/opt/tomcat9/webapps/app.war"
+      }
+    }
+  }
+  } 
+    post{
+    always{
+      mail bcc: 'mylandmarktech@gmail.com', body: '''Success,
+
+The build was great.
+
+Regards
+Landmark Technologies 
++14372152483''', cc: 'mylandmarktech@gmail.com', from: '', replyTo: '', subject: 'sucess', to: 'mylandmarktech@gmail.com'
+    }
+    success{
+      mail bcc: 'mylandmarktech@gmail.com', body: '''Success,
+
+The build was great.
+
+Regards
+Landmark Technologies 
++14372152483''', cc: 'mylandmarktech@gmail.com', from: '', replyTo: '', subject: 'sucess', to: 'mylandmarktech@gmail.com'
+    }
+    failure{
+      mail bcc: 'mylandmarktech@gmail.com', body: '''Failed,
+
+The build Failed.
+
+Regards
+Landmark Technologies 
++14372152483''', cc: 'mylandmarktech@gmail.com', from: '', replyTo: '', subject: 'Failed', to: 'mylandmarktech@gmail.com'
+    }
+  }
+
+}
