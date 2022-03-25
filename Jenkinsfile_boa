@@ -1,5 +1,5 @@
 node{
-  def mavenHome = tool name: 'maven3.8.4'
+  def mavenHome = tool name: 'maven3.8.5'
   stage('1.Clone'){
     git branch: 'master', credentialsId: 'Git_Credentials', url: 'https://github.com/LandmakTechnology/paypal-web-app'
   }
