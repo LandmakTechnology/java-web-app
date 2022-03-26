@@ -1,0 +1,48 @@
+node{
+    def MavenHome = tool name: 'maven3.8.4'
+    stage('1clone'){
+git branch: 'feature', url: 'https://github.com/e-zelle/paypal-web-app.git'
+    }
+    stage('2MavenBuild'){
+sh  "${MavenHome}/bin/mvn clean package"
+//bat 'mvn package' for windows server
+    }
+    stage('3CodeQuality'){
+sh  "${MavenHome}/bin/mvn sonar:sonar"
+    }
+/*    
+    //stage('4UploadArtifacts'){
+ //sh "${MavenHome}/bin/mvn deploy"
+    //}
+    stage('5DeployArtifacts'){
+deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://18.189.43.198:8080/')], contextPath: null, war: 'target/*war'
+//to use the scp key.pem to upload the .war file to tomcat, install the ssh agent plugin and configure
+//scp "target*war" ec2-user@172.34.32.34:/opt/tomcat9/webapps/uatapp.war 
+    }
+    stage('6DeployArtifact'){
+        sshagent(['sshcrendentials']) {
+    // some block
+       sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@18.189.43.198:/opt/tomcat9/webapps/uatapp.war"
+       }
+    }
+    stage('7approval'){
+        timeout(time:5, unit:'HOURS'){
+            input message: 'Please approve deployment to production'
+        }
+    }
+    stage('8DeployArtifact'){
+        sshagent(['sshcrendentials']) {
+    // some block
+       sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@18.189.43.198:/opt/tomcat9/webapps/app.war"
+}
+    }
+    stage('9emailalert'){
+        emailext body: '''Hi 
+
+Build status for boa app
+Regards,
+Landmark Technology ''', recipientProviders: [developers(), requestor()], subject: 'Project Status', to: 'eugeniaasikabeng@gmail.com'
+    }
+}
+*/
+© 2022 GitHub, Inc.
