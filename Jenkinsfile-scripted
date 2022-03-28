@@ -1,11 +1,11 @@
 //scripted pipeline
 node{
- def MHD = tool name: "maven3.8.4"
+ def MHD = tool name: "Maven_Jenkins"
     stage('1.Initiation'){
     sh "echo Start of td deployment"
     }
     stage('2.CloneCode'){
-    git branch: 'stage', credentialsId: 'GitHubCredentials', url: 'https://github.com/LandmakTechnology/web-app'
+   git credentialsId: 'GitHUB_With_Token', url: 'https://github.com/Adanwam/paypal-web-app'
     }
     stage('3.buildMaven'){
     sh "${MHD}/bin/mvn package"
@@ -17,8 +17,8 @@ node{
     //sh "${MHD}/bin/mvn deploy"
     }
     stage('6.Deploy2Stage'){
-    sshagent(['32d5fb4f-d92f-4a10-9f12-2738eab55fcc']) {
-    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/app"
+    sshagent(['ec2-user_tomcat']){
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.92.0:/opt/tomcat9/webapps/my.app"
 }
     
 } 
@@ -29,8 +29,8 @@ node{
     
     }
     stage('8.deployToProd'){
-    sshagent(['32d5fb4f-d92f-4a10-9f12-2738eab55fcc']) {
-    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
+    sshagent(['ec2-user_tomcat']){
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.92.0:/opt/tomcat9/webapps/my_boa"
 }
     
     }
