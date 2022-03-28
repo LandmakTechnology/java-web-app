@@ -7,10 +7,10 @@ node{
     sh "${mavenHome}/bin/mvn clean package"
    // bat 'mvn package'
   }
-   /*   stage('3.CodeQuality'){
+  stage('3.CodeQuality'){
     sh "${mavenHome}/bin/mvn sonar:sonar"
   }
-    stage('4.UploadArtifacts'){
+  /*  stage('4.UploadArtifacts'){
     sh "${mavenHome}/bin/mvn deploy"
   }
       stage('6.Deploy2dev'){
