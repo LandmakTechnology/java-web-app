@@ -1,0 +1,38 @@
+node{
+    def mavenHome = tool name: 'maven3.8.2'
+ 	stage('1clone'){
+     git credentialsId: 'GITHUB-CREDENTIALS', url: 'https://github.com/e2-Banking/paypal-web-app'
+ 	}
+ 	stage('2mavenbuild'){
+ 	    sh"${mavenHome}/bin/mvn clean package"
+ 	    }
+ 	    stage('3codequality'){
+ 	        sh "${mavenHome}/bin/mvn sonar:sonar"
+ 	    }
+ 	    stage('4 deploytotomcat'){
+ 	        deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://52.90.105.219:7000/')], contextPath: null, war: 'target/*war'
+}
+       stage('5.deploy2uat'){
+           sshagent(['agentcredentials']) {
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@52.90.105.219:/opt/tomcat9/webapps/uatapp.war"
+}
+}
+        stage('6 .approval'){
+          timeout(time:5, unit:'HOURS'){
+        input message: 'please approve deployment to productN'
+          }
+        }
+        stage('7.deploytoprod'){
+       sshagent(['agentcredentials']) {
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@52.90.105.219:/opt/tomcat9/webapps/app.war"
+}  
+        }
+        stage('8 emailalerts'){
+            emailext body: '''Hi
+
+Build status for boa app
+
+regards
+Nkeng''', recipientProviders: [developers(), requestor()], subject: 'project status', to: ' zarankeng@gmail.com'
+        }
+}
