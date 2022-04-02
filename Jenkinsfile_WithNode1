@@ -1,5 +1,8 @@
 //scripted pipeline
 node{
+ Agent 
+       {label 'My_Node1_Slave1'
+                 }
  def MHD = tool name: "Maven_Jenkins"
     stage('1.Initiation'){
     sh "echo Start of td deployment"
