@@ -1,0 +1,37 @@
+//scripted pipeline
+node{
+ def MHD = tool name: "Maven_Jenkins"
+    stage('1.Initiation'){
+    sh "echo Start of td deployment"
+    }
+    stage('2.CloneCode'){
+   git credentialsId: 'GitHUB_With_Token', url: 'https://github.com/Adanwam/paypal-web-app'
+    }
+    stage('3.buildMaven'){
+    sh "${MHD}/bin/mvn package"
+    }
+    stage('4.CodeQuality'){
+    //sh "${MHD}/bin/mvn sonar:sonar"
+    }
+    stage('5.UploadArtifacts'){
+    //sh "${MHD}/bin/mvn deploy"
+    }
+    stage('6.Deploy2Stage'){
+    sshagent(['ec2-user_tomcat']){
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.92.0:/opt/tomcat9/webapps/my.app"
+}
+    
+} 
+    }
+    stage('7.Approval'){
+    timeout(time:5, unit:'DAYS'){
+ 			input message: 'Approval for production'
+    
+    }
+    stage('8.deployToProd'){
+    sshagent(['ec2-user_tomcat']){
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.92.0:/opt/tomcat9/webapps/my_boa"
+}
+    
+    }
+}
