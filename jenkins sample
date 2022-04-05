@@ -1,0 +1,41 @@
+node{
+  def mavenHome = tool name: 'maven3.8.5'
+   stage('1.Clone'){
+    git branch: 'master', credentialsId: 'GitHub-Credentials', url: 'https://github.com/starlightng/boa-web-app'
+ }
+   stage('2.BuildArtifact'){
+   sh "${mavenHome}/bin/mvn clean package"
+ }
+   stage('3.CodeQualityAnalysis'){
+   sh "${mavenHome}/bin/mvn sonar:sonar"
+ } 
+   stage('4.UploadArtifacts'){
+   sh "${mavenHome}/bin/mvn deploy"
+ }
+    stage('5.Deploy2Dev'){
+   deploy adapters: [tomcat9(credentialsId: 'tomcat-Credentials', path: '', url: 'http://13.245.209.110:8080/')], contextPath: null, war: 'target/*war'
+ }
+    stage('6.Deploy2UAT'){
+   sshagent(['SAgent']) {
+   sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@13.245.209.110:/opt/tomcat9/webapps/autapp.war"
+ }
+}
+   stage('7.approval'){
+   timeout(time:8, unit:'HOURS'){
+   input message: 'Kindly approve deployment to Production'
+ }
+}
+   stage('8.Deploy2Prod'){
+   sshagent(['SAgent']) {
+   sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@13.245.209.110:/opt/tomcat9/webapps/app.war"
+ }
+}
+   stage('7.EmailAlerts'){
+   emailext body: '''Hello,
+
+Build status for on-going boa-app
+
+Regards,
+Starlight Communications''', subject: 'Project Status', to: 'isimichael@hotmail.com'
+ }
+} 
