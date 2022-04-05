@@ -5,7 +5,7 @@
 	<groupId>com.mt</groupId>
 	<artifactId>maven-web-application</artifactId>
 	<packaging>war</packaging>
-	<version>5.0.1-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	
 	<name>boa-web-app</name>
 
@@ -96,13 +96,13 @@
 	    <repository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Releases Nexus Repository</name>
-	      <url>http://44.201.177.42:8081/repository/boa-releases/</url>
+	      <url>http://44.201.177.42:8081/repository/Paypal-uat-releases/</url>
 	    </repository>
 	    
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Snapshot Nexus Repository </name>
-	      <url>http://44.201.177.42:8081/repository/boa-snapshot/</url>
+	      <url>http://44.201.177.42:8081/repository/Paypal-uat-snapshot/</url>
 	    </snapshotRepository>
 	    
 	</distributionManagement>
