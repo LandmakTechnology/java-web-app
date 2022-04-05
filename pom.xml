@@ -5,9 +5,9 @@
 	<groupId>com.mt</groupId>
 	<artifactId>maven-web-application</artifactId>
 	<packaging>war</packaging>
-	<version>-SNAPSHOT</version>
+	<version>5.0.1-SNAPSHOT</version>
 	
-	<name>maven-web-application</name>
+	<name>boa-web-app</name>
 
 	<description>Maven Web Project for Java Project</description>
 
